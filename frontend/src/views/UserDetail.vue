@@ -1,4 +1,3 @@
-<!-- src/views/UserDetail.vue -->
 <template>
   <div v-if="user" class="user-detail-container p-4">
     <div class="flex justify-between items-center mb-4">
@@ -110,7 +109,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useToast } from 'primevue/usetoast'
-import axios from 'axios'
+import instance from '@/plugins/axios'
 
 const route = useRoute()
 const router = useRouter()
@@ -135,7 +134,7 @@ const timezoneOptions = [
 // Fetch user details
 const fetchUserDetails = async () => {
   try {
-    const response = await axios.get(`/users/${route.params.id}`)
+    const response = await instance.get(`/users/${route.params.id}`)
     user.value = response.data
   } catch (error) {
     toast.add({
@@ -156,7 +155,7 @@ const editUser = () => {
 // Save user
 const saveUser = async () => {
   try {
-    await axios.put(`/users/${route.params.id}`, editedUser.value)
+    await instance.put(`/users/${route.params.id}`, editedUser.value)
     toast.add({
       severity: 'success',
       summary: 'Success',
@@ -185,7 +184,7 @@ const confirmDelete = () => {
 // Delete user
 const deleteUser = async () => {
   try {
-    await axios.delete(`/users/${route.params.id}`)
+    await instance.delete(`/users/${route.params.id}`)
     toast.add({
       severity: 'success',
       summary: 'Success',

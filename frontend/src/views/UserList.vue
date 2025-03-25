@@ -100,6 +100,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useToast } from 'primevue/usetoast'
+import instance from '@/plugins/axios'
 
 const toast = useToast()
 const users = ref([])
@@ -115,7 +116,7 @@ const currentUser = ref({
 const isEditing = ref(false)
 const userToDelete = ref(null)
 
-// Predefined options
+// predefined options (hard coded for simplicity)
 const roleOptions = ['admin', 'manager', 'tester']
 const timezoneOptions = [
   'America/New_York',
@@ -126,11 +127,11 @@ const timezoneOptions = [
   // Add more timezones as needed
 ]
 
-// Fetch users
+// fetch all users
 const fetchUsers = async () => {
   loading.value = true
   try {
-    const response = await axios.get('/users')
+    const response = await instance.get('/users')
     users.value = response.data
   } catch (error) {
     toast.add({
@@ -167,7 +168,7 @@ const editUser = (user) => {
 const saveUser = async () => {
   try {
     if (isEditing.value) {
-      await axios.put(`/users/${currentUser.value._id}`, currentUser.value)
+      await instance.put(`/users/${currentUser.value._id}`, currentUser.value)
       toast.add({
         severity: 'success',
         summary: 'Success',
@@ -175,7 +176,7 @@ const saveUser = async () => {
         life: 3000,
       })
     } else {
-      await axios.post('/users', currentUser.value)
+      await instance.post('/users', currentUser.value)
       toast.add({
         severity: 'success',
         summary: 'Success',
@@ -205,7 +206,7 @@ const confirmDelete = (user) => {
 // Delete user
 const deleteUser = async () => {
   try {
-    await axios.delete(`/users/${userToDelete.value._id}`)
+    await instance.delete(`/users/${userToDelete.value._id}`)
     toast.add({
       severity: 'success',
       summary: 'Success',

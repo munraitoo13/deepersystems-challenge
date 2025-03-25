@@ -2,7 +2,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import PrimeVue from 'primevue/config'
-import axios from 'axios'
+import Aura from '@primeuix/themes/aura'
 
 // primevue components
 import { DataTable, Button, Column, Dialog, InputText, Toast, ToastService } from 'primevue'
@@ -10,7 +10,11 @@ import { DataTable, Button, Column, Dialog, InputText, Toast, ToastService } fro
 const app = createApp(App)
 
 app.use(router)
-app.use(PrimeVue)
+app.use(PrimeVue, {
+  theme: Aura,
+  locale: 'en',
+  inputStyle: 'filled',
+})
 app.use(ToastService)
 
 // global components

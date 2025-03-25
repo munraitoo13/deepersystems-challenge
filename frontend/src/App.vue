@@ -1,12 +1,11 @@
-<!-- src/App.vue -->
+<script setup></script>
+
 <template>
   <div class="app-container">
     <Toast />
     <router-view></router-view>
   </div>
 </template>
-
-<script setup></script>
 
 <style>
 body {
