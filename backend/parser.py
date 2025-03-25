@@ -26,6 +26,7 @@ class User:
     roles: list
     preferences: UserPreferences
     created_ts: float
+    updated_ts: float = datetime.now().timestamp()
     active: bool = True
 
 
@@ -50,6 +51,7 @@ def parse_user_data(user_data):
         created_ts=datetime.fromisoformat(
             user_data["created_at"].replace("Z", "")
         ).timestamp(),
+        updated_ts=None,
     )
 
 

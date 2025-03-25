@@ -22,6 +22,7 @@ class User:
     roles: list
     preferences: UserPreferences
     created_ts: float = datetime.now().timestamp()
+    updated_ts: float = datetime.now().timestamp()
     active: bool = True
 
 

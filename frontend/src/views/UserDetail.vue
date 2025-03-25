@@ -1,83 +1,97 @@
 <template>
-  <div v-if="user" class="user-detail-container p-4">
-    <div class="flex justify-between items-center mb-4">
+  <div v-if="user" class="user-detail-container">
+    <!-- heading -->
+    <div class="heading">
       <h1 class="text-2xl">User Details</h1>
-      <div class="flex gap-2">
+
+      <div class="actions-btns">
         <Button label="Edit" icon="pi pi-pencil" class="p-button-warning" @click="confirmEdit" />
         <Button label="Delete" icon="pi pi-trash" class="p-button-danger" @click="confirmDelete" />
       </div>
     </div>
 
-    <div class="grid">
-      <div class="col-12 md:col-6">
-        <div class="p-3 surface-100 border-round">
-          <div class="mb-3">
-            <label class="block text-600 mb-2">Username</label>
-            <p class="text-900 font-medium">{{ user.username }}</p>
-          </div>
-          <div class="mb-3">
-            <label class="block text-600 mb-2">Roles</label>
-            <p class="text-900 font-medium">{{ user.roles.join(', ') }}</p>
-          </div>
-          <div class="mb-3">
-            <label class="block text-600 mb-2">Timezone</label>
-            <p class="text-900 font-medium">{{ user.preferences.timezone }}</p>
-          </div>
-          <div class="mb-3">
-            <label class="block text-600 mb-2">Account Status</label>
-            <p class="text-900 font-medium">
-              <i
-                :class="
-                  user.active
-                    ? 'pi pi-check-circle text-green-500'
-                    : 'pi pi-times-circle text-red-500'
-                "
-              ></i>
-              {{ user.active ? 'Active' : 'Inactive' }}
-            </p>
-          </div>
-          <div>
-            <label class="block text-600 mb-2">Created At</label>
-            <p class="text-900 font-medium">
-              {{ new Date(user.created_ts * 1000).toLocaleString() }}
-            </p>
-          </div>
+    <!-- user details -->
+    <div class="details-card">
+      <div class="details">
+        <div>
+          <label class="card-label">Username</label>
+          <p class="text-900 font-medium">{{ user.username }}</p>
+        </div>
+
+        <div>
+          <label class="card-label">Roles</label>
+          <p class="text-900 font-medium">{{ user.roles.join(', ') }}</p>
+        </div>
+
+        <div>
+          <label class="card-label">Timezone</label>
+          <p class="text-900 font-medium">{{ user.preferences.timezone }}</p>
+        </div>
+
+        <div>
+          <label class="card-label">Account Status</label>
+          <p class="text-900 font-medium">
+            {{ user.active ? 'Active' : 'Inactive' }}
+          </p>
+        </div>
+
+        <div>
+          <label class="card-label">Created At</label>
+          <p class="text-900 font-medium">
+            {{ new Date(user.created_ts * 1000).toLocaleString() }}
+          </p>
+        </div>
+
+        <div>
+          <label class="card-label">Updated At</label>
+          <p class="text-900 font-medium">
+            {{ updated_ts ? new Date(user.updated_ts * 1000).toLocaleString() : 'N/A' }}
+          </p>
         </div>
       </div>
     </div>
 
     <!-- edit user dialog -->
     <Dialog v-model:visible="userDialogVisible" header="Edit User" modal class="p-fluid">
-      <div class="p-field">
-        <label>Username</label>
-        <InputText v-model="editedUser.username" />
-      </div>
-      <div class="p-field">
-        <label>Password</label>
-        <InputText
-          type="password"
-          v-model="editedUser.password"
-          placeholder="Leave blank to keep current password"
-        />
-      </div>
-      <div class="p-field">
-        <label>Roles</label>
-        <Dropdown v-model="editedUser.roles" :options="roleOptions" multiple />
-      </div>
-      <div class="p-field">
-        <label>Timezone</label>
-        <Dropdown v-model="editedUser.preferences.timezone" :options="timezoneOptions" />
-      </div>
-      <div class="p-field">
-        <label>Account Status</label>
-        <Dropdown
-          v-model="editedUser.active"
-          :options="[
-            { label: 'Active', value: true },
-            { label: 'Inactive', value: false },
-          ]"
-        />
-      </div>
+      <Fluid class="edit-user-form">
+        <div>
+          <label>Username</label>
+          <InputText v-model="editedUser.username" />
+        </div>
+
+        <div>
+          <label>Password</label>
+          <InputText
+            type="password"
+            v-model="editedUser.password"
+            placeholder="Leave blank to keep current password"
+          />
+        </div>
+
+        <div>
+          <label>Roles</label>
+          <MultiSelect v-model="editedUser.roles" :options="roleOptions" />
+        </div>
+
+        <div>
+          <label>Timezone</label>
+          <Select v-model="editedUser.preferences.timezone" :options="timezoneOptions" />
+        </div>
+
+        <div>
+          <label>Account Status</label>
+          <Select
+            v-model="editedUser.active"
+            :options="[
+              { label: 'Active', value: true },
+              { label: 'Inactive', value: false },
+            ]"
+            option-label="label"
+            option-value="value"
+          />
+        </div>
+      </Fluid>
+
       <template #footer>
         <Button
           label="Cancel"
@@ -118,6 +132,51 @@
     </Dialog>
   </div>
 </template>
+
+<style>
+.user-detail-container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+.actions-btns {
+  display: flex;
+  gap: 1rem;
+}
+.heading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.details-card {
+  background: #fff;
+  padding: 2rem 3rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: fit-content;
+}
+.details {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+.card-label {
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+.details p {
+  margin-top: 0.25rem;
+}
+.edit-user-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+</style>
 
 <script setup>
 import { ref, onMounted } from 'vue'
