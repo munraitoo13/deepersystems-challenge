@@ -63,6 +63,8 @@ In a new terminal window/tab:
    npm run dev
    ```
 
+After that, just open the URL provided by the script you've just run and you are good to go.
+
 ## Technology Stack
 
 - Backend: Python, Flask
