@@ -45,7 +45,7 @@
         <div>
           <label class="card-label">Updated At</label>
           <p class="text-900 font-medium">
-            {{ updated_ts ? new Date(user.updated_ts * 1000).toLocaleString() : 'N/A' }}
+            {{ user.updated_ts ? new Date(user.updated_ts * 1000).toLocaleString() : 'N/A' }}
           </p>
         </div>
       </div>

@@ -98,7 +98,6 @@
           <label>Timezone</label>
           <Select v-model="currentUser.preferences.timezone" :options="timezoneOptions" />
         </div>
-
         <div>
           <label>Account Status</label>
           <Select
@@ -171,6 +170,7 @@ const currentUser = ref({
   password: '',
   roles: [],
   preferences: { timezone: '' },
+  active: true,
 })
 const isEditing = ref(false)
 const userToDelete = ref(null)
@@ -201,6 +201,7 @@ const openCreateUserDialog = () => {
     password: '',
     roles: [],
     preferences: { timezone: '' },
+    active: true,
   }
   isEditing.value = false
   userDialogVisible.value = true
@@ -222,6 +223,8 @@ const editUser = (user) => {
 
 // saves user (create or update)
 const saveUser = async () => {
+  currentUser.value.active = currentUser.value.active ?? 'true'
+
   try {
     if (isEditing.value) {
       await instance.put(`/users/${currentUser.value._id}`, currentUser.value)

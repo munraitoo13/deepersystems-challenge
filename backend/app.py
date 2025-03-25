@@ -22,7 +22,7 @@ class User:
     roles: list
     preferences: UserPreferences
     created_ts: float = datetime.now().timestamp()
-    updated_ts: float = datetime.now().timestamp()
+    updated_ts: float | None = None
     active: bool = True
 
 
@@ -51,18 +51,24 @@ def create_user():
         return jsonify({"error": "No data provided"}), 400
 
     # validate required fields
-    required_fields = ["username", "password", "roles", "preferences"]
+    required_fields = ["username", "password", "roles"]
     for field in required_fields:
         if field not in data:
             return jsonify({"error": f"'{field}' is required"}), 400
 
-    # ensure preferences is a UserPreferences instance
-    if "preferences" in data and isinstance(data["preferences"], dict):
-        data["preferences"] = UserPreferences(**data["preferences"])
+    # Handle preferences separately
+    preferences = data.get("preferences", {})
+    user_preferences = UserPreferences(**preferences)
 
     # create User instance
     try:
-        user = User(**data)
+        user = User(
+            username=data["username"],
+            password=data["password"],
+            roles=data["roles"],
+            preferences=user_preferences,
+            active=data["active"],
+        )
     except TypeError as e:
         return jsonify({"error": str(e)}), 400
 
@@ -70,8 +76,10 @@ def create_user():
     user_dict = user.__dict__.copy()
     user_dict["preferences"] = user.preferences.__dict__
 
-    collection.insert_one(user_dict)
-    user_dict["_id"] = str(user_dict["_id"])
+    # Insert the user
+    result = collection.insert_one(user_dict)
+    user_dict["_id"] = str(result.inserted_id)
+
     return jsonify(user_dict), 201
 
 
@@ -82,12 +90,10 @@ def update_user(id):
     if not data:
         return jsonify({"error": "No data provided"}), 400
 
-    # Ensure preferences is a UserPreferences instance if provided
-    if "preferences" in data and isinstance(data["preferences"], dict):
-        data["preferences"] = UserPreferences(**data["preferences"])
-
     # Prepare update dictionary
-    update_data = {}
+    update_data = {"updated_ts": datetime.now().timestamp()}
+
+    # Update specific fields
     if "username" in data:
         update_data["username"] = data["username"]
     if "password" in data:
@@ -95,9 +101,17 @@ def update_user(id):
     if "roles" in data:
         update_data["roles"] = data["roles"]
     if "preferences" in data:
-        update_data["preferences"] = data["preferences"].__dict__
+        update_data["preferences"] = (
+            UserPreferences(**data["preferences"]).__dict__
+            if isinstance(data["preferences"], dict)
+            else data["preferences"]
+        )
+    if "active" in data:
+        update_data["active"] = data["active"]
 
+    # Perform the update
     result = collection.update_one({"_id": ObjectId(id)}, {"$set": update_data})
+
     if result.modified_count > 0:
         return jsonify({"message": "User updated successfully"}), 200
     else:
