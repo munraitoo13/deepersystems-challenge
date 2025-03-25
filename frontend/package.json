@@ -10,11 +10,16 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@primeuix/themes": "^1.0.0",
+    "axios": "^1.8.4",
+    "primeflex": "^4.0.0",
+    "primeicons": "^7.0.0",
+    "primevue": "^4.3.2",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.2.1",
+    "@vitejs/plugin-vue": "^5.2.3",
     "@vitejs/plugin-vue-jsx": "^4.1.1",
     "prettier": "3.5.3",
     "vite": "^6.2.1",
