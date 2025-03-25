@@ -33,17 +33,6 @@
           <i :class="data.active ? 'pi pi-check text-green-500' : 'pi pi-times text-red-500'"></i>
         </template>
       </Column>
-      <Column header="Created At">
-        <template #body="{ data }">
-          {{
-            new Date(data.created_ts * 1000).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: '2-digit',
-              day: '2-digit',
-            })
-          }}
-        </template>
-      </Column>
       <Column header="Updated At">
         <template #body="{ data }">
           {{
@@ -54,6 +43,17 @@
                   day: '2-digit',
                 })
               : 'N/A'
+          }}
+        </template>
+      </Column>
+      <Column header="Created At">
+        <template #body="{ data }">
+          {{
+            new Date(data.created_ts * 1000).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+            })
           }}
         </template>
       </Column>
