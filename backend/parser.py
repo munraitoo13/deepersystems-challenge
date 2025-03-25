@@ -25,8 +25,8 @@ class User:
     password: str
     roles: list
     preferences: UserPreferences
-    active: bool = True
     created_ts: float
+    active: bool = True
 
 
 # function to parse user data from JSON
