@@ -28,14 +28,19 @@ A full-stack web application for user management with Flask, MongoDB, and Vue.js
    ```bash
    pip install -r requirements.txt
    ```
+5. Environment Variables
 
-5. Import initial data
+   Create `.env` files in backend with:
+   
+   - Database connection string (check .env.example in backend folder)
+
+6. Import initial data
 
    ```bash
    python parser.py
    ```
 
-6. Run Flask server
+7. Run Flask server
 
    ```bash
    python3 app.py
@@ -43,24 +48,20 @@ A full-stack web application for user management with Flask, MongoDB, and Vue.js
 
 ### Frontend Setup
 
+In a new terminal window/tab:
+
 1. Navigate to frontend directory
 2. Install dependencies
 
    ```bash
-   npm install
+   npm install (or your use favorite package manager)
    ```
 
 3. Run development server
 
    ```bash
-   npm run dev (or your favorite package manager)
+   npm run dev
    ```
-
-## Environment Variables
-
-Create `.env` files in backend with:
-
-- Database connection string (check .env.example in backend folder)
 
 ## Technology Stack
 
