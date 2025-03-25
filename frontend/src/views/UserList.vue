@@ -4,6 +4,7 @@
 
     <Button label="Create New User" icon="pi pi-plus" class="mb-4" @click="openCreateUserDialog" />
 
+    <!-- users table -->
     <DataTable :value="users" :loading="loading" class="p-datatable-striped">
       <Column field="username" header="Username">
         <template #body="{ data }">
@@ -36,7 +37,7 @@
             <Button
               icon="pi pi-pencil"
               class="p-button-warning p-button-sm"
-              @click="editUser(data)"
+              @click="confirmEdit(data)"
             />
             <Button
               icon="pi pi-trash"
@@ -48,7 +49,7 @@
       </Column>
     </DataTable>
 
-    <!-- User Dialog (Create/Edit) -->
+    <!-- create/edit dialog -->
     <Dialog v-model:visible="userDialogVisible" :header="dialogHeader" modal class="p-fluid">
       <div class="p-field">
         <label>Username</label>
@@ -81,7 +82,7 @@
       </template>
     </Dialog>
 
-    <!-- Confirmation Dialog -->
+    <!-- delete confirmation dialog -->
     <Dialog v-model:visible="deleteConfirmVisible" header="Confirm Delete" modal>
       <p>Are you sure you want to delete this user?</p>
       <template #footer>
@@ -92,6 +93,20 @@
           @click="deleteConfirmVisible = false"
         />
         <Button label="Yes" icon="pi pi-check" class="p-button-danger" @click="deleteUser" />
+      </template>
+    </Dialog>
+
+    <!-- edit confirmation dialog -->
+    <Dialog v-model:visible="editConfirmVisible" header="Confirm Edit" modal>
+      <p>Are you sure you want to edit this user?</p>
+      <template #footer>
+        <Button
+          label="No"
+          icon="pi pi-times"
+          class="p-button-text"
+          @click="editConfirmVisible = false"
+        />
+        <Button label="Yes" icon="pi pi-check" class="p-button-danger" @click="editUser" />
       </template>
     </Dialog>
   </div>
@@ -105,8 +120,10 @@ import instance from '@/plugins/axios'
 const toast = useToast()
 const users = ref([])
 const loading = ref(false)
+import { timezoneOptions, roleOptions } from '@/constants/constants'
 const userDialogVisible = ref(false)
 const deleteConfirmVisible = ref(false)
+const editConfirmVisible = ref(false)
 const currentUser = ref({
   username: '',
   password: '',
@@ -115,17 +132,7 @@ const currentUser = ref({
 })
 const isEditing = ref(false)
 const userToDelete = ref(null)
-
-// predefined options (hard coded for simplicity)
-const roleOptions = ['admin', 'manager', 'tester']
-const timezoneOptions = [
-  'America/New_York',
-  'Europe/London',
-  'Asia/Tokyo',
-  'Australia/Sydney',
-  'Europe/Berlin',
-  // Add more timezones as needed
-]
+const userToEdit = ref(null)
 
 // fetch all users
 const fetchUsers = async () => {
@@ -145,7 +152,7 @@ const fetchUsers = async () => {
   }
 }
 
-// Open create user dialog
+// open create user dialog
 const openCreateUserDialog = () => {
   currentUser.value = {
     username: '',
@@ -157,14 +164,21 @@ const openCreateUserDialog = () => {
   userDialogVisible.value = true
 }
 
-// Edit user
-const editUser = (user) => {
-  currentUser.value = { ...user }
-  isEditing.value = true
-  userDialogVisible.value = true
+// Confirm edit
+const confirmEdit = (user) => {
+  userToEdit.value = user
+  editConfirmVisible.value = true
 }
 
-// Save user (create or update)
+// edits user
+const editUser = (user) => {
+  currentUser.value = { ...userToEdit.value }
+  isEditing.value = true
+  userDialogVisible.value = true
+  editConfirmVisible.value = false
+}
+
+// saves user (create or update)
 const saveUser = async () => {
   try {
     if (isEditing.value) {
@@ -197,13 +211,13 @@ const saveUser = async () => {
   }
 }
 
-// Confirm delete
+// confirm deletion
 const confirmDelete = (user) => {
   userToDelete.value = user
   deleteConfirmVisible.value = true
 }
 
-// Delete user
+// deletes user
 const deleteUser = async () => {
   try {
     await instance.delete(`/users/${userToDelete.value._id}`)
@@ -225,6 +239,6 @@ const deleteUser = async () => {
   }
 }
 
-// Fetch users on component mount
+// fetch users on component mount
 onMounted(fetchUsers)
 </script>

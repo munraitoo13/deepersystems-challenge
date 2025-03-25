@@ -11,9 +11,9 @@ const app = createApp(App)
 
 app.use(router)
 app.use(PrimeVue, {
-  theme: Aura,
-  locale: 'en',
-  inputStyle: 'filled',
+  theme: {
+    preset: Aura,
+  },
 })
 app.use(ToastService)
 

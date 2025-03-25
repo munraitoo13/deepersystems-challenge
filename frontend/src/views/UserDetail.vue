@@ -3,7 +3,7 @@
     <div class="flex justify-between items-center mb-4">
       <h1 class="text-2xl">User Details</h1>
       <div class="flex gap-2">
-        <Button label="Edit" icon="pi pi-pencil" class="p-button-warning" @click="editUser" />
+        <Button label="Edit" icon="pi pi-pencil" class="p-button-warning" @click="confirmEdit" />
         <Button label="Delete" icon="pi pi-trash" class="p-button-danger" @click="confirmDelete" />
       </div>
     </div>
@@ -46,7 +46,7 @@
       </div>
     </div>
 
-    <!-- User Edit Dialog -->
+    <!-- edit user dialog -->
     <Dialog v-model:visible="userDialogVisible" header="Edit User" modal class="p-fluid">
       <div class="p-field">
         <label>Username</label>
@@ -89,7 +89,7 @@
       </template>
     </Dialog>
 
-    <!-- Confirmation Dialog -->
+    <!-- delete confirm dialog -->
     <Dialog v-model:visible="deleteConfirmVisible" header="Confirm Delete" modal>
       <p>Are you sure you want to delete this user?</p>
       <template #footer>
@@ -102,11 +102,26 @@
         <Button label="Yes" icon="pi pi-check" class="p-button-danger" @click="deleteUser" />
       </template>
     </Dialog>
+
+    <!-- edit confirm dialog -->
+    <Dialog v-model:visible="editConfirmVisible" header="Confirm Edit" modal>
+      <p>Are you sure you want to edit this user?</p>
+      <template #footer>
+        <Button
+          label="No"
+          icon="pi pi-times"
+          class="p-button-text"
+          @click="editConfirmVisible = false"
+        />
+        <Button label="Yes" icon="pi pi-check" class="p-button-danger" @click="editUser" />
+      </template>
+    </Dialog>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { timezoneOptions, roleOptions } from '@/constants/constants'
 import { useRoute, useRouter } from 'vue-router'
 import { useToast } from 'primevue/usetoast'
 import instance from '@/plugins/axios'
@@ -114,22 +129,11 @@ import instance from '@/plugins/axios'
 const route = useRoute()
 const router = useRouter()
 const toast = useToast()
-
 const user = ref(null)
 const userDialogVisible = ref(false)
 const deleteConfirmVisible = ref(false)
 const editedUser = ref(null)
-
-// Predefined options
-const roleOptions = ['admin', 'manager', 'tester']
-const timezoneOptions = [
-  'America/New_York',
-  'Europe/London',
-  'Asia/Tokyo',
-  'Australia/Sydney',
-  'Europe/Berlin',
-  // Add more timezones as needed
-]
+const editConfirmVisible = ref(false)
 
 // Fetch user details
 const fetchUserDetails = async () => {
@@ -149,6 +153,7 @@ const fetchUserDetails = async () => {
 // Open edit dialog
 const editUser = () => {
   editedUser.value = { ...user.value }
+  editConfirmVisible.value = false
   userDialogVisible.value = true
 }
 
@@ -179,6 +184,11 @@ const saveUser = async () => {
 // Confirm delete
 const confirmDelete = () => {
   deleteConfirmVisible.value = true
+}
+
+// Confirm delete
+const confirmEdit = () => {
+  editConfirmVisible.value = true
 }
 
 // Delete user
