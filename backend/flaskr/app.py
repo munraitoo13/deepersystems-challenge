@@ -2,9 +2,33 @@ from datetime import datetime
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from pymongo import MongoClient
+from dataclasses import dataclass
 from bson import ObjectId
-from backend.config.env import mongo_uri
-from backend.models.user_preferences import UserPreferences
+import os
+from dotenv import load_dotenv
+
+
+# dataclass for user preferences
+@dataclass
+class UserPreferences:
+    timezone: str
+
+
+# dataclass for user
+@dataclass
+class User:
+    username: str
+    password: str
+    roles: list
+    preferences: UserPreferences
+    created_ts: float = datetime.now().timestamp()
+    updated_ts: float | None = None
+    active: bool = True
+
+
+# load environment variables
+load_dotenv()
+mongo_uri = os.getenv("MONGODB_URI")
 
 # initialize flask app
 app = Flask(__name__)
