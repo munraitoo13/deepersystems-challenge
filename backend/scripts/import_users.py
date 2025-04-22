@@ -1,15 +1,13 @@
-from dataclasses import dataclass, asdict
-from datetime import datetime, timezone
+from dataclasses import asdict, dataclass
+from datetime import datetime
 import json
 from pymongo import MongoClient
-from dotenv import load_dotenv
 import os
+from dotenv import load_dotenv
 
-# load environment variables
+# load environment variables from .env file
 load_dotenv()
-mongo_uri = os.getenv("MONGODB_URI")
-if not mongo_uri:
-    raise ValueError("MONGODB_URI environment variable not set")
+mongo_uri = os.getenv("MONGO_URI")
 
 
 # dataclass for user preferences
@@ -26,8 +24,8 @@ class User:
     roles: list[str]
     preferences: UserPreferences
     createdAt: datetime
-    updatedAt: datetime | None
     active: bool
+    updatedAt: datetime | None = None
 
 
 # function to parse user data from json
@@ -47,10 +45,8 @@ def parse_users(user_data):
         password=user_data["password"],
         roles=roles,
         preferences=UserPreferences(timezone=user_data["user_timezone"]),
+        createdAt=datetime.fromisoformat(user_data["created_at"]),
         active=user_data["is_user_active"],
-        createdAt=datetime.fromisoformat(
-            user_data["created_at"].replace("Z", "")
-        ).replace(tzinfo=timezone.utc),
         updatedAt=None,
     )
 
@@ -58,8 +54,8 @@ def parse_users(user_data):
 # mongoDB connection and import users
 def import_users():
     # load json data
-    with open("./scripts/udata.json", "r") as users_file:
-        data = json.load(users_file)
+    with open("./scripts/udata.json", "r") as udata:
+        data = json.load(udata)
 
     # connect to mongodb
     client = MongoClient(mongo_uri)
@@ -67,11 +63,11 @@ def import_users():
     users_collection = db["users"]
 
     # insert users into mongodb
-    users_to_insert = [asdict(parse_users(user)) for user in data["users"]]
-    users_collection.insert_many(users_to_insert)
+    users = [asdict(parse_users(user)) for user in data["users"]]
+    users_collection.insert_many(users)
 
     # print number of users imported
-    print(f"Imported {len(users_to_insert)} users to MongoDB.")
+    print(f"Imported {len(users)} users to MongoDB.")
 
     # close the connection
     client.close()
