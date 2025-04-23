@@ -1,0 +1,18 @@
+services:
+  node-app:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.node
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./frontend:/app
+
+  python-app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.python
+    ports:
+      - "7000:7000"
+    volumes:
+      - ./backend:/app
