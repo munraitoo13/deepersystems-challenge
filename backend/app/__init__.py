@@ -4,7 +4,7 @@ from .config import Config
 from app.repositories.user_repository import UserRepository
 from app.services.user_service import UserService
 from app.database.database import get_collection
-from app.api.users import users_blueprint, get_routes
+from app.routes.users import users_blueprint, get_routes
 
 
 def create_app() -> Flask:
